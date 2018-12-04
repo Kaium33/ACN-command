@@ -1,0 +1,108 @@
+>>standard
+>>at server router
+# access-list 20 deny 172.16.0.2(pc ip address) 0.0.0.0
+>>permit command should be at last
+# access-list 20 permit any
+# int f0/0
+# ip access-group 20 out
+>>to remove access-list
+# no access-list 20
+
+
+>>Extended
+>>at my router
+# access-list 110 deny tcp 10.1.126.2(source) 0.0.0.0 10.1.248.194(destination) 0.0.0.0 eq 80(http)
+# access-list 110 permit ip any any
+# int f0/0
+# ip access-group 110 in(/out)
+
+
+>>Delete access list
+# int f0/0 
+# no ip access-group 110 in
+# no access-list 110
+
+
+
+>>DHCP
+>>Command at router
+# ip dhcp pool ACN(any name)
+# network 192.168.0.0 255.255.255.0
+# default-router 192.168.0.1(gateway adress)
+
+
+
+>>Redistribution
+>>at CS router
+>>RIP
+# do show ip route
+# router rip
+# ver 2
+# network 192.168.1.0(network ip)
+........................(many more)
+
+
+>>at root Router
+# router rip
+# ver 2
+# net 192.168.1.0(same rip network)
+
+
+>>EIGRP
+>>at EEE router
+# router eigrp 100
+# net 192.168.1.0 0.0.0.3
+........................(many more)
+
+>>at root router
+# router eigrp 100
+# net 192.168.1.0 0.0.0.3 (only one that has eigrp)
+
+>>OSPF
+>>at BBA router
+# router ospf 100
+# net 172.168.31.8 0.0.0.127 area 10
+........................(many more)
+
+>>at root router
+# router ospf 100
+# net 172.168.31.8 0.0.0.127 area 10
+
+
+>>Redistribution starts
+>>OSPF router
+>>BBA router
+# router ospf 100
+# redistribute rip subnets
+# redistribute eigrp 100 subnet
+
+>>root router
+# router ospf 100
+# redistribute rip subnets
+# redistribute eigrp 100 subnets
+
+
+>>CS Router
+>>RIP router
+# router rip
+# version 2
+# redistribute ospf 100 metric 15
+# redistribute eigrp 100 metric 15
+
+>>ROOT rotuer
+# router rip 
+# version 2
+# redistribute ospf 100 metric 15
+# redistribute eigrp 100 metric 15
+
+>>EIGRP router
+>>EEE router
+# router eigrp 100
+# redistribute rip metric 255 255 255 255 255
+# redistribute ospf metric 255 255 255 255 255
+
+
+>>Root router
+# router eigrp 100
+# redistribute rip metric 255 255 255 255 255
+# redistribute ospf metric 255 255 255 255 255
